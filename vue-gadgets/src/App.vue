@@ -1,48 +1,20 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
-import ProductList from './components/ProductList.vue';
-
-const items = ref([]);
-
-const fetchItems = async () => {
-  try {
-    const { data } = await axios.get(
-      'https://221e77868d602a8b.mokky.dev/items'
-    );
-    items.value = data.map((obj) => ({
-      ...obj,
-      isFavorite: false,
-      isAdded: false,
-    }));
-  } catch (e) {
-    console.log('Ошибка запроса:', e);
-  }
-};
-
-onMounted(async () => {
-  await fetchItems();
-});
+import VCatalog from "./components/VCatalog.vue";
 </script>
 
 <template>
   <body class="flex flex-col justify-between h-dvh">
     <div class="mx-auto w-[1440px] mb-25">
-
       <!-- Шапка (Навигация) -->
       <nav class="py-3 border-b border-b-slate-200">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <img
-              src="/logo.svg"
-              alt=""
-            />
+            <img src="/logo.svg" alt="" />
             <p class="text-sm">
               Лучшие цены <br />
               в интернет-магазинах
             </p>
           </div>
-
           <ul class="flex gap-10">
             <li>
               <a href="" class="flex gap-3 items-center">
@@ -72,15 +44,13 @@ onMounted(async () => {
         </div>
       </nav>
 
-      <!-- Главный контент (Каталог) -->
+      <!-- Главный контент -->
       <main class="pt-10">
-        <h1 class="text-[40px] font-bold mb-5">Каталог</h1>
-        <product-list :items="items"></product-list>
+        <v-catalog />
       </main>
-
     </div>
 
-    <!-- Подвал сайта (Footer) -->
+    <!-- Подвал сайта -->
     <footer class="p-6 bg-slate-100">
       <div class="text-center text-slate-500">
         Copyright © 2023 Behoof, Inc. Все права защищены
