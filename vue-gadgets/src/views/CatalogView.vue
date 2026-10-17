@@ -1,11 +1,14 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import axios from "axios";
-import VProduct from "./VProduct.vue";
-import SearchInput from "./SearchInput.vue";
-import SortSelect from "./SortSelect.vue";
+import VProduct from "@/components/VProduct.vue";
+import SearchInput from "@/components/SearchInput.vue";
+import SortSelect from "@/components/SortSelect.vue";
+import ProductSkeletonLoader from "@/components/ProductSkeletonLoader.vue";
 
 const items = ref([]);
+
+const showSkeletonLoader = ref(true);
 
 const fetchItems = async () => {
   try {
@@ -24,6 +27,8 @@ const fetchItems = async () => {
 
 onMounted(async () => {
   await fetchItems();
+
+  showSkeletonLoader.value = false;
 
   const savedSort = localStorage.getItem('shop_sort_by');
   if (savedSort) {
@@ -95,15 +100,24 @@ const filteredProducts = computed(() => {
 
     <!-- Сетка вывода товаров -->
     <div class="grid grid-cols-5 gap-5">
-      <v-product
-        v-for="item in filteredProducts"
-        :key="item.id"
-        :img-url="item.imageUrl"
-        :title="item.title"
-        :price="item.price.toLocaleString('ru-RU')"
-      ></v-product>
 
-      <p v-if="filteredProducts.length === 0" class="text-gray-500 col-span-5 text-center py-10">
+      <template v-if="showSkeletonLoader">
+        <product-skeleton-loader
+          v-for="value in 10"
+          :key="value"
+        />
+      </template>
+
+      <template v-else>
+        <v-product
+          v-for="item in filteredProducts"
+          :key="item.id"
+          :product="item"
+        ></v-product>
+      </template>
+
+      <!-- Текст показываем только если загрузка закончилась и товаров нет -->
+      <p v-if="!showSkeletonLoader && filteredProducts.length === 0" class="text-gray-500 col-span-5 text-center py-10">
         Товары не найдены
       </p>
     </div>
